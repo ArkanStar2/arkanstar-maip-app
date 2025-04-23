@@ -5,7 +5,7 @@ import os
 
 # Load environment variables
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.set_page_config(page_title="MAIP - My AI Partner", page_icon="🤖", layout="centered")
 
@@ -18,17 +18,15 @@ user_input = st.text_input("What would you like MAIP to help you with today?", "
 if user_input:
     with st.spinner("Thinking..."):
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are MAIP, an AI assistant helping Kenneth with projects and building tools."},
                     {"role": "user", "content": user_input}
                 ]
             )
-            answer = response.choices[0].message["content"]
+            answer = response.choices[0].message.content
             st.success("Here’s what MAIP suggests:")
             st.write(answer)
         except Exception as e:
             st.error(f"Something went wrong: {e}")
-
-
